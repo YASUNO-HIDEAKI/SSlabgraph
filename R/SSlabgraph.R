@@ -75,3 +75,4 @@ boxplot <- function(data, x, y, xlab, ylab, fill) {
         boxgraph <<- graph
 
 }
+
