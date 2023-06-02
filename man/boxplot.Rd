@@ -4,7 +4,7 @@
 \alias{boxplot}
 \title{graph for soil science lab}
 \usage{
-boxplot(data, x, y, xlab, ylab, fill)
+boxplot(data, x, y, xlab, ylab, fill, col)
 }
 \arguments{
 \item{data}{use data}
@@ -18,6 +18,8 @@ boxplot(data, x, y, xlab, ylab, fill)
 \item{ylab}{y axis title name}
 
 \item{fill}{fill name You do not have to enter it if you do not need id}
+
+\item{col}{color code}
 }
 \value{
 graph

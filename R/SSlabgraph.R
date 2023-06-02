@@ -11,12 +11,13 @@
 #' @param xlab x axis title name
 #' @param ylab y axis title name
 #' @param fill fill name You do not have to enter it if you do not need id
+#' @param col color code
 #' @return graph
 #' @export
 #' @examples
 #' # boxplot(data = soil data, x = Treatment, y = CUE)
 
-boxplot <- function(data, x, y, xlab, ylab, fill) {
+boxplot <- function(data, x, y, xlab, ylab, fill, col) {
 
         if(missing(fill)) {
 
@@ -53,6 +54,16 @@ boxplot <- function(data, x, y, xlab, ylab, fill) {
                               axis.line = element_line(color = "black"),
                               axis.text = element_text(color = "black"),
                               legend.title = element_blank())
+
+                if(missing(col)) {
+
+                }else{
+
+                        graph <-
+                                graph +
+                                scale_fill_manual(values = col)
+
+                        }
 
         }
 
