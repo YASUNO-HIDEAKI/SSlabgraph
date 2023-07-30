@@ -3,6 +3,7 @@
 export(boxplot)
 export(f.NMDS.analysis)
 export(f.NMDS.graph)
-export(f.envfit.analysis)
 import(ggplot2)
+import(vegan)
+importFrom(GerminaR,textcolor)
 importFrom(dplyr,"%>%")

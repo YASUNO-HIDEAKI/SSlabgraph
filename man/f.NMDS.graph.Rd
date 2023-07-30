@@ -4,12 +4,10 @@
 \alias{f.NMDS.graph}
 \title{NMDS graph}
 \usage{
-f.NMDS.graph(data, env, color, shape)
+f.NMDS.graph(data = nmds.result, color, shape)
 }
 \arguments{
 \item{data}{Enter the "data.score" obtained from "f.nmds.result"}
-
-\item{env}{Enter the "env.vec" obtained from "f.envfit.analysis". You can omit.}
 
 \item{color}{Enter the color name or hexadecimal color code. You can omit.}
 

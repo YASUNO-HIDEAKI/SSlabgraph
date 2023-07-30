@@ -1,133 +1,59 @@
 #' @title NMDS analysis
-#' @description \code{f.NMDS.analysis} NMDS analysis
+#' @description
+#' \code{f.NMDS.analysis} NMDS analysis
 #'
-#' @param data Amplicon or PLFA data
-#' @param dttype You choice "A" or "P". If you analyse amplicon data, you choice "A". If you analyse PLFA data, you choice "P".
-#' @param subsamplesize You enter sabsamplesize
-#' @param loc location data. You read location data sheet.
+#' @importFrom dplyr %>%
+#' @import vegan
+#' @importFrom GerminaR textcolor
 #'
-#' @export
-#' @return data.score
+#' @param data use data
+#' @param loc location data
 #' @return nmds.result
-#'
-#' @examples
-#' # f.NMDS.analysis(data = input, dytype = "A", subsamplesize = 20000, loc = loc)
-
-
-f.NMDS.analysis <-
-        function(data, dttype, subsamplesize, loc) {
-
-                if(dtype == "P") {
-
-                        input <- data
-
-                        id <- input %>%
-                                rownames(.) %>%
-                                stringr::str_sub(., end = -2)
-
-                        id <- as.data.frame(id, row.names = names("id"))
-
-                        input2 <- cbind(input, id)
-
-                        input2 <<- input2
-
-                }else {
-
-                        input <- data %>%
-                                  t()
-
-                        input.excel.5OTU <- subset(input, rowSums(input) > 5) %>%
-                                             t()
-
-                        input.cleaned <- subset(input.excel.5OTU, rowSums(input.excel.5OTU) > 5) %>%
-                                          t()
-
-                        subsamplesize <- subsamplesize
-
-                        tobe.rarefied <- subset(input.cleaned, rowSums(input.cleaned) >= subsamplesize)
-
-                        rarefied <- rrarefy(tobe.rarefied, subsamplesize)
-
-                        mean <- rowSums(rarefied) %>%
-                                 mean()
-
-                        min <- rowSums(rarefied) %>%
-                                min()
-
-                        input <- subset(t(rarefied), rowSums(t(rarefied)) > 0) %>%
-                                  t()
-
-                        id <- input %>%
-                                rownames(.) %>%
-                                stringr::str_sub(., end = -2)
-
-                        input2 <- cbind(input, id)
-
-                        input2 <<- input2
-                        print(mean)
-                        print(min)
-
-                beta.dist <- vegdist(input2, method = "bray")
-
-                nmds.result <- metaMDS(input2, distance = "bray")
-                nmds.result <<- nmds.result
-
-                print(nmds.result)
-
-                loc <- loc
-
-                perANOVA <-adonis(beta.dist ~ loc$id, permutations = 10000)
-
-                print(perANOVA)
-
-                data.score <- nmds.result %>%
-                               scores() %>%
-                               as.data.frame()
-
-                data.score <- cbind(data.score, loc)
-
-                data.score <<- data.score
-
-                }
-
-        }
-
-#' @title Envfit analysis
-#' @description \code{f.envfit.analysis} Envfit analysis
-#'
-#' @param data Enter the "nmds.result" obtained from "f.NMDS.analysis
-#' @param env Environment data. You read Environmental data sheet.
-#'
+#' @return bata.dist
 #' @export
-#' @return env.vec
-#'
 #' @examples
-#' # environment <- read.csv(environment.csv, header = T, stringAsFactor = T)
-#' #f.envfit.analysis(data = nmds.resuslt, env = environment)
-#'
+#' # f.NMDS.analysis(data = input, loc = loc)
 
-f.envfit.analysis <-
-        function(data, env) {
+f.NMDS.analysis <- function(data, loc) {
 
-                nmds.result <- data
-                env <- env
+        beta.dist <- vegdist(data, method = "bray")
+        GerminaR::textcolor("Result of beta.dist", fg = "blue") %>%
+                message()
+        print(beta.dist)
 
-                env.fit <- envfit(nmds.result, env, permu = 10000)
+        nmds.result <- metaMDS(beta.dist, distance = "bray")
 
-                env.vec <- scores(env.fit, display = "vectors") %>%
-                            as.data.frame()
+        GerminaR::textcolor("Result of metaMDS \n Stress value of <0.2 indicate a good fit of the model", fg = "blue") %>%
+                message()
+        print(nmds.result)
+        nmds.result <<- nmds.result
+        plot(nmds.result, type = "t", display = "site")
 
-                env.vec <- cbind(env.vec, vecname = rownames(env.vec))
+        adonis.result <- adonis2(beta.dist~loc[, 2],permutation=10000)
+        GerminaR::textcolor("Result of adonis \n
+                            SumofSqs = Total sum of squars \n
+                            F = F value \n
+                            R2 indicate that location can extimate ~~%. \n
+                            Pr value of <0.05 indicate the significant different of β diversity among location",
+                            fg = "blue") %>%
+                message()
+        print(adonis.result)
 
-                env.vec <<- env.vec
+        dispaaesion <- betadisper(beta.dist, loc[, 2])
+        anova.result <- anova(dispersion)
+        GerminaR::textcolor("Result of anova", fg = "blue") %>%
+                message()
+        print(anova.result)
 
-        }
+}
 
 #' @title NMDS graph
 #' @description \code{f.NMDS.graph} create NMDS plot
 #'
+#' @importFrom dplyr %>%
+#' @import ggplot2
+#'
 #' @param data Enter the "data.score" obtained from "f.nmds.result"
-#' @param env Enter the "env.vec" obtained from "f.envfit.analysis". You can omit.
 #' @param color Enter the color name or hexadecimal color code. You can omit.
 #' @param shape Enter the shape number. You can omit.
 #'
@@ -141,10 +67,20 @@ f.envfit.analysis <-
 #'
 
 f.NMDS.graph <-
-        function(data, env, color, shape) {
+        function(data = nmds.result, color, shape) {
+
+                score <- data %>%
+                        scores() %>%
+                        as.data.frame()
+
+                id <- score %>%
+                        rownames(.) %>%
+                        stringr::str_sub(., end = -2)
+
+                score <- cbind(score, id)
 
                 graph <-
-                        data %>%
+                        score %>%
                         ggplot(aes(x = NMDS1, y = NMDS2, color = id, shape = id)) +
                         geom_hline(yintercept = 0,
                                    linetype = "dashed",
@@ -155,35 +91,17 @@ f.NMDS.graph <-
                                    size = 0.5,
                                    color = "black") +
                         geom_point(stat = "identity",
-                                   size = 7,
-                                   stroke = 3) +
+                                   size = 5,
+                                   stroke = 1.5) +
                         theme_test(base_rect_size = 1.5,　
                                    base_line_size = 1) +
-                        theme(legend.text = element_text(size = 24),　
+                        theme(legend.text = element_text(size = 20),　
                               legend.key.size = unit(1.2, "cm"),　#凡例の大きさ
-                              legend.title = element_text(size = 20), #凡例タイトルの大きさ
-                              axis.title = element_text(size = 24),　#軸タイトルの大きさ
-                              axis.text = element_text(size = 24, color = "black"),　#軸ラベルの大きさ
+                              legend.title = element_blank(), #凡例タイトルの大きさ
+                              axis.title = element_text(size = 18),　#軸タイトルの大きさ
+                              axis.text = element_text(size = 20, color = "black"),　#軸ラベルの大きさ
                               plot.margin = unit(c(1,1,1,1), "lines"))
 
-                if(missing(env)) {
-
-                }else{
-
-                        graph <-
-                                graph +
-                                geom_segment(data = env,
-                                             aes(x = 0, xend = NMDS1, y = 0, yend = NMDS2),
-                                             arrow = arrow(length = unit(0.25, "cm")),
-                                             color = "black") +
-                                geom_text(data = env,
-                                          aes(x = NMDS1,
-                                              y = NMDS2,
-                                              label = vecname),
-                                          size = 3)
-
-
-                }
 
                 if(missing(color) & missing(shape)) {
 

@@ -45,28 +45,31 @@ You can analyse NMDS and create NMDS plot easily.
 First, You read the amplicon or PLFA data sheet and location data sheet.
 
 ``` r
-data <- read.csv("amplicon.csv", header = T, stringsAsFactors = T)
+input <- read.csv("input.csv", header = T, stringsAsFactors = T)
 loc <- read.csv("loc.csv", headet = T, stringsAsFactors = T)
 ```
 Second, you ran "f.NMDS.analysis"
-The variables are "data", "dttype", "subsamplesize" and "loc". 
+The variables are "data" and "loc". 
 The "data" is enter the amplicon or PLFA data.
-The "dttype" is enter "A" or "P". When you analyse amplicon data, you enter "A". When you analyse PLFA data, you enter "P".
-The "subsamplesize" is enter any number.
 The "loc" is enter location data. 
 
 ``` r
-SSlabgraph::f.NMDS.analysi(data = data, dttype = "A", subsamplesie = 20000, loc = loc)
+SSlabgraph::f.NMDS.analysi(data = input, loc = loc)
 ```
 
-Third, if you want, you ran "f.enfit.analysis".
-The variables are "data" and "env"
-The "data" is the "nmds.result that is result of f.NMDS.result.
-The "env" is environment data.
+Third, to creat NMDS graph, you ran "f.NMDS.graph".
+The variables are "data",  "color" and "shape"
+The "data" is the "nmds.result" that is result of "f.NMDS.result".
+Default of the data is "nmds.result"
+The "color" is legend color. If you want to change color.
+The "shape" is legend shape. If you want to change shape.
 
 ``` r
-# env <- read.csv("environment.csv", header = T, stringsAsFactors = T)
-SSlabgraph::f.env.analysi(data = nmds.resut, env = env)
+#You can create the simple NMDS graph only this
+SSlabgraph::f.env.analysi()
+
+#change color and/or shape
+SSlabgraph:: f.NMDS.graph(color = c("red", "green", "yellow", .....), shape = c(1, 2, 3, ......))
 ```
 
 ## Example

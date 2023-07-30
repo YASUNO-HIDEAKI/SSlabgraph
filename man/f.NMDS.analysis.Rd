@@ -4,25 +4,21 @@
 \alias{f.NMDS.analysis}
 \title{NMDS analysis}
 \usage{
-f.NMDS.analysis(data, dttype, subsamplesize, loc)
+f.NMDS.analysis(data, loc)
 }
 \arguments{
-\item{data}{Amplicon or PLFA data}
+\item{data}{use data}
 
-\item{dttype}{You choice "A" or "P". If you analyse amplicon data, you choice "A". If you analyse PLFA data, you choice "P".}
-
-\item{subsamplesize}{You enter sabsamplesize}
-
-\item{loc}{location data. You read location data sheet.}
+\item{loc}{location data}
 }
 \value{
-data.score
-
 nmds.result
+
+bata.dist
 }
 \description{
 \code{f.NMDS.analysis} NMDS analysis
 }
 \examples{
-# f.NMDS.analysis(data = input, dytype = "A", subsamplesize = 20000, loc = loc)
+# f.NMDS.analysis(data = input, loc = loc)
 }
