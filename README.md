@@ -66,7 +66,7 @@ The "shape" is legend shape. If you want to change shape.
 
 ``` r
 #You can create the simple NMDS graph only this
-SSlabgraph::f.NMDS.graph
+SSlabgraph::f.NMDS.graph()
 
 #change color and/or shape
 SSlabgraph:: f.NMDS.graph(color = c("red", "green", "yellow", .....), shape = c(1, 2, 3, ......))
